@@ -21,10 +21,12 @@ const App = () => {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (currentData.id) {
+      updateCategory(currentData)
       //put
     } else {
+      console.log("ID",currentData.id);
       addCategory({
         name: currentData.name,
         description: currentData.description,
@@ -32,33 +34,42 @@ const App = () => {
     }
   };
 
-  const addCategory=(newCategory)=>{
-axios.post('https://northwind.vercel.app/api/categories',newCategory).then(()=>{
-  fetchData()
-  setCurrentData({id:"",name:"",description:""})
-})
+
+const updateCategory=(updateCategory)=>{
+    axios.put(`https://northwind.vercel.app/api/categories/${updateCategory.id}`,updateCategory).then(()=>fetchData())
+
   }
 
 
+
+  const addCategory = (newCategory) => {
+    axios
+      .post("https://northwind.vercel.app/api/categories", newCategory)
+      .then(() => {
+        fetchData();
+        setCurrentData({ id:'', name:'', description:'' });
+      });
+  };
+
   const handleInputNameChange = (e) => {
-    setCurrentData({ ...currentData, name: e.target.value });
+    setCurrentData({...currentData, name: e.target.value });
   };
 
   const handleInputDescriptionChange = (e) => {
-    setCurrentData({ ...currentData, description: e.target.value });
+    setCurrentData({...currentData, description: e.target.value });
   };
 
   const handleEdit = (category) => {
-    setCurrentData(category)
+    setCurrentData(category);
   };
 
   const handleDelete = (id) => {
-    
-axios.delete(`https://northwind.vercel.app/api/categories/${id}`).then(()=>{
-  fetchData()
-})
-
-  }
+    axios
+      .delete(`https://northwind.vercel.app/api/categories/${id}`)
+      .then(() => {
+        fetchData();
+      });
+  };
   return (
     <div>
       <form onSubmit={handleSubmit}>
@@ -77,6 +88,7 @@ axios.delete(`https://northwind.vercel.app/api/categories/${id}`).then(()=>{
       <table>
         <thead>
           <tr>
+            <th>Id</th>
             <th>Name</th>
             <th>Description</th>
             <th>Setting</th>
@@ -87,10 +99,21 @@ axios.delete(`https://northwind.vercel.app/api/categories/${id}`).then(()=>{
           {data &&
             data.map((item) => (
               <tr key={item.id}>
+                <td>{item.id}</td>
                 <td>{item.name}</td>
                 <td>{item.description}</td>
                 <td>
-                  <button onClick={() => handleEdit({id:item.id,name:item.name,description:item.description})}>Edit</button>
+                  <button
+                    onClick={() =>
+                      handleEdit({
+                        id: item.id,
+                        name: item.name,
+                        description: item.description,
+                      })
+                    }
+                  >
+                    Edit
+                  </button>
                   <button onClick={() => handleDelete(item.id)}>Delete</button>
                 </td>
               </tr>
